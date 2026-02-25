@@ -6,8 +6,17 @@
 import logging
 from pathlib import Path
 
-from graphrag.config.defaults import graphrag_config_defaults
-from graphrag.config.init_content import INIT_DOTENV, INIT_YAML
+from graphrag.config.defaults import (
+    DEFAULT_COMPLETION_MODEL,
+    DEFAULT_EMBEDDING_MODEL,
+    graphrag_config_defaults,
+)
+from graphrag.config.init_content import (
+    INIT_DOTENV,
+    INIT_DOTENV_OSS,
+    INIT_YAML,
+    INIT_YAML_OSS,
+)
 from graphrag.prompts.index.community_report import (
     COMMUNITY_REPORT_PROMPT,
 )
@@ -34,9 +43,21 @@ from graphrag.prompts.query.question_gen_system_prompt import QUESTION_SYSTEM_PR
 
 logger = logging.getLogger(__name__)
 
+GRAPHRAG_DEFAULTS_SELECTION = "graphrag-defaults"
+OSS_SELECTION = "oss"
+LEGACY_INHOUSE_SELECTION = "inhouse"
+OPENAI_MODEL_PROVIDER = "openai"
+OSS_MODEL_PROVIDER = "oss"
+OSS_DEFAULT_COMPLETION_MODEL = "qwen2.5-7b-instruct-awq"
+OSS_DEFAULT_EMBEDDING_MODEL = "Qwen3-Embedding-4B"
+
 
 def initialize_project_at(
-    path: Path, force: bool, model: str, embedding_model: str
+    path: Path,
+    force: bool,
+    model_provider: str,
+    model: str | None,
+    embedding_model: str | None,
 ) -> None:
     """
     Initialize the project at the given path.
@@ -47,6 +68,12 @@ def initialize_project_at(
         The path at which to initialize the project.
     force : bool
         Whether to force initialization even if the project already exists.
+    model_provider : str
+        The model provider to use for generated model config values.
+    model : str | None
+        Optional completion model override.
+    embedding_model : str | None
+        Optional embedding model override.
 
     Raises
     ------
@@ -57,6 +84,39 @@ def initialize_project_at(
     root = Path(path).resolve()
     root.mkdir(parents=True, exist_ok=True)
 
+    provider_selection = model_provider.strip().lower()
+    # Backward-compatible alias: treat "openai" as "graphrag-defaults".
+    if provider_selection == OPENAI_MODEL_PROVIDER:
+        provider_selection = GRAPHRAG_DEFAULTS_SELECTION
+
+    if provider_selection not in {
+        GRAPHRAG_DEFAULTS_SELECTION,
+        OSS_SELECTION,
+        LEGACY_INHOUSE_SELECTION,
+    }:
+        msg = (
+            f"Unsupported model provider '{model_provider}'. "
+            f"Supported providers: {GRAPHRAG_DEFAULTS_SELECTION}, {OSS_SELECTION}."
+        )
+        raise ValueError(msg)
+
+    if provider_selection in {OSS_SELECTION, LEGACY_INHOUSE_SELECTION}:
+        resolved_model_provider = OSS_MODEL_PROVIDER
+        resolved_model = model or OSS_DEFAULT_COMPLETION_MODEL
+        resolved_embedding_model = embedding_model or OSS_DEFAULT_EMBEDDING_MODEL
+        default_completion_api_key = "${NA}"
+        default_embedding_api_key = "${NA}"
+        init_yaml = INIT_YAML_OSS
+        init_dotenv = INIT_DOTENV_OSS
+    else:
+        resolved_model_provider = OPENAI_MODEL_PROVIDER
+        resolved_model = model or DEFAULT_COMPLETION_MODEL
+        resolved_embedding_model = embedding_model or DEFAULT_EMBEDDING_MODEL
+        default_completion_api_key = "${GRAPHRAG_API_KEY}"
+        default_embedding_api_key = "${GRAPHRAG_API_KEY}"
+        init_yaml = INIT_YAML
+        init_dotenv = INIT_DOTENV
+
     settings_yaml = root / "settings.yaml"
     if settings_yaml.exists() and not force:
         msg = f"Project already initialized at {root}"
@@ -66,15 +126,18 @@ def initialize_project_at(
         root / (graphrag_config_defaults.input_storage.base_dir or "input")
     ).resolve()
     input_path.mkdir(parents=True, exist_ok=True)
-    # using replace with custom tokens instead of format here because we have a placeholder for GRAPHRAG_API_KEY that is used later for .env overlay
-    formatted = INIT_YAML.replace("<DEFAULT_COMPLETION_MODEL>", model).replace(
-        "<DEFAULT_EMBEDDING_MODEL>", embedding_model
+    formatted = (
+        init_yaml.replace("<DEFAULT_MODEL_PROVIDER>", resolved_model_provider)
+        .replace("<DEFAULT_COMPLETION_MODEL>", resolved_model)
+        .replace("<DEFAULT_EMBEDDING_MODEL>", resolved_embedding_model)
+        .replace("<DEFAULT_COMPLETION_API_KEY>", default_completion_api_key)
+        .replace("<DEFAULT_EMBEDDING_API_KEY>", default_embedding_api_key)
     )
     settings_yaml.write_text(formatted, encoding="utf-8", errors="strict")
 
     dotenv = root / ".env"
     if not dotenv.exists() or force:
-        dotenv.write_text(INIT_DOTENV, encoding="utf-8", errors="strict")
+        dotenv.write_text(init_dotenv, encoding="utf-8", errors="strict")
 
     prompts_dir = root / "prompts"
     prompts_dir.mkdir(parents=True, exist_ok=True)

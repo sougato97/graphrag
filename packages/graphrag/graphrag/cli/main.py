@@ -11,8 +11,6 @@ from pathlib import Path
 import typer
 
 from graphrag.config.defaults import (
-    DEFAULT_COMPLETION_MODEL,
-    DEFAULT_EMBEDDING_MODEL,
     graphrag_config_defaults,
 )
 from graphrag.config.enums import IndexingMethod, SearchMethod
@@ -108,17 +106,31 @@ def _initialize_cli(
         resolve_path=True,
         autocompletion=ROOT_AUTOCOMPLETE,
     ),
-    model: str = typer.Option(
-        DEFAULT_COMPLETION_MODEL,
+    model_provider: str = typer.Option(
+        "graphrag-defaults",
+        "--model-provider",
+        "-p",
+        prompt=(
+            "Select model provider:\n"
+            "- graphrag-defaults\n"
+            "- oss\n"
+            "fallback: graphrag-defaults\n"
+            "Choice"
+        ),
+        show_default=False,
+        help="Model provider to use for generated default model configuration.",
+    ),
+    model: str | None = typer.Option(
+        None,
         "--model",
         "-m",
-        prompt="Specify the default chat model to use",
+        help="Optional override for the default chat model.",
     ),
-    embedding_model: str = typer.Option(
-        DEFAULT_EMBEDDING_MODEL,
+    embedding_model: str | None = typer.Option(
+        None,
         "--embedding",
         "-e",
-        prompt="Specify the default embedding model to use",
+        help="Optional override for the default embedding model.",
     ),
     force: bool = typer.Option(
         False,
@@ -131,7 +143,11 @@ def _initialize_cli(
     from graphrag.cli.initialize import initialize_project_at
 
     initialize_project_at(
-        path=root, force=force, model=model, embedding_model=embedding_model
+        path=root,
+        force=force,
+        model_provider=model_provider,
+        model=model,
+        embedding_model=embedding_model,
     )
 
 

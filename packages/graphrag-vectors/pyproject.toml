@@ -34,6 +34,8 @@ dependencies = [
     "azure-cosmos~=4.9",
     "azure-identity~=1.25",
     "azure-search-documents~=11.6",
+    "clickhouse-connect~=0.8",
+    "clickhouse-driver~=0.2.9",
     "graphrag-common==3.0.2",
     "lancedb~=0.24.1",
     "numpy~=2.1",

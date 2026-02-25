@@ -233,6 +233,35 @@ def _create_base_completions(
     model_provider = model_config.model_provider
     model = model_config.azure_deployment_name or model_config.model
 
+    if model_provider in {"oss", "inhouse"}:
+        from graphrag_llm.adapters import OSSOpenAIAdapter
+
+        adapter = OSSOpenAIAdapter(
+            api_base=model_config.api_base or "",
+            default_model=model,
+            call_args=model_config.call_args,
+        )
+
+        def _base_completion(
+            **kwargs: Any,
+        ) -> LLMCompletionResponse | Iterator[LLMCompletionChunk]:
+            kwargs.pop("metrics", None)
+            kwargs.pop("mock_response", None)
+            kwargs.pop("response_format_json_object", None)
+            response = adapter.completion(**kwargs)
+            return response
+
+        async def _base_completion_async(
+            **kwargs: Any,
+        ) -> LLMCompletionResponse | AsyncIterator[LLMCompletionChunk]:
+            kwargs.pop("metrics", None)
+            kwargs.pop("mock_response", None)
+            kwargs.pop("response_format_json_object", None)
+            response = await adapter.completion_async(**kwargs)
+            return response
+
+        return _base_completion, _base_completion_async
+
     base_args: dict[str, Any] = {
         "drop_params": drop_unsupported_params,
         "model": f"{model_provider}/{model}",

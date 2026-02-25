@@ -42,3 +42,12 @@ storage = storage_factory.create(strategy="my_storage_key", init_args={"base_dir
 ...
 
 ```
+
+## Table Providers
+
+For tabular pipeline outputs, GraphRAG uses `TableProvider` implementations.
+Built-in table providers include:
+
+- `parquet`
+- `csv`
+- `clickhouse`

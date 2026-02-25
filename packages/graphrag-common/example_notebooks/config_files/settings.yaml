@@ -4,7 +4,40 @@
 ### LLM settings ###
 ## There are a number of settings to tune the threading and token limits for LLM calls - check the docs.
 name: "my-app"
+
+completion_models:
+  default_completion_model:
+    model_provider: oss
+    model: ${CHAT_COMPLETIONS_MODEL}
+    api_key: ${NA}
+    api_base: ${CHAT_COMPLETIONS_MODEL_ENDPOINT}
+
+embedding_models:
+  default_embedding_model:
+    model_provider: oss
+    model: ${EMBEDDING_MODEL}
+    api_key: ${NA}
+    api_base: ${EMBEDDING_MODEL_ENDPOINT}
+
 logging:
   # whatever fields your Logging model requires
   directory: "output/logs"
   filename: "app.log"
+
+table_provider:
+  type: clickhouse
+  host: ${CLICKHOUSE_HOST}
+  port: ${CLICKHOUSE_PORT}
+  database: ${CLICKHOUSE_TABLE_DB}
+  user: ${CLICKHOUSE_USER}
+  password: ${CLICKHOUSE_PASSWORD}
+  namespace: ${CLICKHOUSE_TABLE_NAMESPACE}
+  use_storage_path_as_namespace: true
+
+vector_store:
+  type: clickhouse
+  host: ${CLICKHOUSE_HOST}
+  port: ${CLICKHOUSE_PORT}
+  database: ${CLICKHOUSE_VECTOR_DB}
+  user: ${CLICKHOUSE_USER}
+  password: ${CLICKHOUSE_PASSWORD}

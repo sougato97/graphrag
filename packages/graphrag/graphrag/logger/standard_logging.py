@@ -38,6 +38,8 @@ import logging
 from typing import TYPE_CHECKING
 
 from graphrag.logger.factory import (
+    DATE_FORMAT,
+    LOG_FORMAT,
     LoggerFactory,
 )
 
@@ -51,6 +53,7 @@ def init_loggers(
     config: GraphRagConfig,
     verbose: bool = False,
     filename: str = DEFAULT_LOG_FILENAME,
+    console: bool = False,
 ) -> None:
     """Initialize logging handlers for graphrag based on configuration.
 
@@ -62,6 +65,8 @@ def init_loggers(
         Whether to enable verbose (DEBUG) logging.
     filename : Optional[str]
         Log filename on disk. If unset, will use a default name.
+    console : bool, default=False
+        Whether to also write logs to the terminal.
     """
     logger = logging.getLogger("graphrag")
     log_level = logging.DEBUG if verbose else logging.INFO
@@ -89,3 +94,14 @@ def init_loggers(
     handler = LoggerFactory().create(reporting_config.type, args)
     logger.addHandler(handler)
     llm_logger.addHandler(handler)
+
+    if console:
+        formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt=DATE_FORMAT)
+
+        logger_console_handler = logging.StreamHandler()
+        logger_console_handler.setFormatter(formatter)
+        logger.addHandler(logger_console_handler)
+
+        llm_console_handler = logging.StreamHandler()
+        llm_console_handler.setFormatter(formatter)
+        llm_logger.addHandler(llm_console_handler)

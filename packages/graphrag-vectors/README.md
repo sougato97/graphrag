@@ -19,6 +19,7 @@ This example shows a different approach to create vector stores by directly usin
 - **LanceDB**: Local vector database
 - **Azure AI Search**: Azure's managed search service with vector capabilities
 - **Azure Cosmos DB**: Azure's NoSQL database with vector search support
+- **ClickHouse**: Open-source OLAP database with vector functions (cosineDistance)
 
 ## Custom Vector Store
 

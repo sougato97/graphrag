@@ -50,4 +50,39 @@ class VectorStoreConfig(BaseModel):
         default=None,
     )
 
+    host: str | None = Field(
+        description="The database host to use when type == clickhouse.",
+        default=None,
+    )
+
+    port: int | None = Field(
+        description="The database port to use when type == clickhouse.",
+        default=None,
+    )
+
+    protocol: str | None = Field(
+        description="The ClickHouse protocol to use when type == clickhouse (native or http).",
+        default=None,
+    )
+
+    database: str | None = Field(
+        description="The database name to use when type == clickhouse.",
+        default=None,
+    )
+
+    user: str | None = Field(
+        description="The database user to use when type == clickhouse.",
+        default=None,
+    )
+
+    password: str | None = Field(
+        description="The database password to use when type == clickhouse.",
+        default=None,
+    )
+
+    secure: bool | None = Field(
+        description="Whether to use TLS when type == clickhouse.",
+        default=None,
+    )
+
     index_schema: dict[str, IndexSchema] = {}

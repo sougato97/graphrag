@@ -82,6 +82,7 @@ class CommunityReportsExtractor:
             response = await self._model.completion_async(
                 messages=prompt,
                 response_format=CommunityReportResponse,  # A model is required when using json mode
+                max_tokens=self._max_report_length,
             )
 
             output = response.formatted_response  # type: ignore

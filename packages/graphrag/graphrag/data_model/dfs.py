@@ -8,6 +8,7 @@ from typing import Any
 import pandas as pd
 
 from graphrag.data_model.schemas import (
+    COMMUNITY_REPORTS_FINAL_COLUMNS,
     COMMUNITY_CHILDREN,
     COMMUNITY_ID,
     COMMUNITY_LEVEL,
@@ -89,6 +90,15 @@ def communities_typed(df: pd.DataFrame) -> pd.DataFrame:
 
 def community_reports_typed(df: pd.DataFrame) -> pd.DataFrame:
     """Return the community reports dataframe with correct types, in case it was stored in a weakly-typed format."""
+    if df.empty:
+        # Preserve schema for empty datasets so downstream workflows can read safely.
+        if not set(COMMUNITY_REPORTS_FINAL_COLUMNS).issubset(df.columns):
+            return pd.DataFrame(columns=COMMUNITY_REPORTS_FINAL_COLUMNS)
+        return df
+
+    if COMMUNITY_ID not in df.columns:
+        return pd.DataFrame(columns=COMMUNITY_REPORTS_FINAL_COLUMNS)
+
     if SHORT_ID in df.columns:
         df[SHORT_ID] = df[SHORT_ID].astype(int)
     df[COMMUNITY_ID] = df[COMMUNITY_ID].astype(int)

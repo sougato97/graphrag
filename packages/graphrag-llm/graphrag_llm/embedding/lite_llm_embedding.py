@@ -167,6 +167,27 @@ def _create_base_embeddings(
     model_provider = model_config.model_provider
     model = model_config.azure_deployment_name or model_config.model
 
+    if model_provider in {"oss", "inhouse"}:
+        from graphrag_llm.adapters import OSSOpenAIAdapter
+
+        adapter = OSSOpenAIAdapter(
+            api_base=model_config.api_base or "",
+            default_model=model,
+            call_args=model_config.call_args,
+        )
+
+        def _base_embedding(**kwargs: Any) -> LLMEmbeddingResponse:
+            kwargs.pop("metrics", None)
+            response = adapter.embedding(**kwargs)
+            return response
+
+        async def _base_embedding_async(**kwargs: Any) -> LLMEmbeddingResponse:
+            kwargs.pop("metrics", None)
+            response = await adapter.embedding_async(**kwargs)
+            return response
+
+        return _base_embedding, _base_embedding_async
+
     base_args: dict[str, Any] = {
         "drop_params": drop_unsupported_params,
         "model": f"{model_provider}/{model}",

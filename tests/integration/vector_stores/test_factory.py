@@ -12,6 +12,7 @@ from graphrag_vectors import (
     VectorStoreType,
 )
 from graphrag_vectors.azure_ai_search import AzureAISearchVectorStore
+from graphrag_vectors.clickhouse import ClickHouseVectorStore
 from graphrag_vectors.cosmosdb import CosmosDBVectorStore
 from graphrag_vectors.lancedb import LanceDBVectorStore
 
@@ -19,6 +20,7 @@ from graphrag_vectors.lancedb import LanceDBVectorStore
 VectorStoreFactory().register(VectorStoreType.LanceDB, LanceDBVectorStore)
 VectorStoreFactory().register(VectorStoreType.AzureAISearch, AzureAISearchVectorStore)
 VectorStoreFactory().register(VectorStoreType.CosmosDB, CosmosDBVectorStore)
+VectorStoreFactory().register(VectorStoreType.ClickHouse, ClickHouseVectorStore)
 
 
 def test_create_lancedb_vector_store():
@@ -27,6 +29,19 @@ def test_create_lancedb_vector_store():
     }
     vector_store = VectorStoreFactory().create(VectorStoreType.LanceDB, kwargs)
     assert isinstance(vector_store, LanceDBVectorStore)
+    assert vector_store.index_name == "vector_index"
+
+
+def test_create_clickhouse_vector_store():
+    kwargs = {
+        "host": "127.0.0.1",
+        "port": 9001,
+        "database": "applicant_analytics",
+        "user": "clickhouse",
+        "password": "clickhouse",
+    }
+    vector_store = VectorStoreFactory().create(VectorStoreType.ClickHouse, kwargs)
+    assert isinstance(vector_store, ClickHouseVectorStore)
     assert vector_store.index_name == "vector_index"
 
 
@@ -96,6 +111,7 @@ def test_is_supported_type():
     assert VectorStoreType.LanceDB in VectorStoreFactory()
     assert VectorStoreType.AzureAISearch in VectorStoreFactory()
     assert VectorStoreType.CosmosDB in VectorStoreFactory()
+    assert VectorStoreType.ClickHouse in VectorStoreFactory()
 
     # Test unknown type
     assert "unknown" not in VectorStoreFactory()
