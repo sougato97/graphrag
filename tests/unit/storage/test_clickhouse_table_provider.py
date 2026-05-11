@@ -1,4 +1,4 @@
-# Copyright (c) 2026 Microsoft Corporation.
+# Copyright (c) 2026 Sougato
 # Licensed under the MIT License
 
 import re

@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Microsoft Corporation.
+# Copyright (c) 2026 Sougato
 # Licensed under the MIT License
 
 """Adapter for custom open-source model endpoints to GraphRAG/OpenAI-like response objects."""

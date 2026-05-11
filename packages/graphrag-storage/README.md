@@ -1,3 +1,6 @@
+<!-- Copyright (c) 2024 Microsoft Corporation. -->
+<!-- Modifications Copyright (c) 2026 Sougato -->
+
 # GraphRAG Storage
 
 This package provides a unified storage abstraction layer with support for multiple backends including file system, Azure Blob, Azure Cosmos, and memory storage. It features a factory-based creation system with configuration-driven setup and extensible architecture for implementing custom storage providers.

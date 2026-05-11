@@ -1,4 +1,4 @@
-# Copyright (c) 2024 Microsoft Corporation.
+# Copyright (c) 2026 Sougato
 # Licensed under the MIT License
 
 """A package containing the ClickHouse vector store implementation."""

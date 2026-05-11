@@ -1,3 +1,5 @@
+# Copyright (c) 2024 Microsoft Corporation.
+# Modifications Copyright (c) 2026 Sougato
 [project]
 name = "graphrag-vectors"
 version = "3.0.2"

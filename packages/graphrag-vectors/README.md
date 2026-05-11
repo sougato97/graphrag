@@ -1,3 +1,6 @@
+<!-- Copyright (c) 2024 Microsoft Corporation. -->
+<!-- Modifications Copyright (c) 2026 Sougato -->
+
 # GraphRAG Vectors
 
 This package provides vector store implementations for GraphRAG with support for multiple backends including LanceDB, Azure AI Search, and Azure Cosmos DB. It offers both a convenient configuration-driven API and direct factory access for creating and managing vector stores with flexible index schema definitions.

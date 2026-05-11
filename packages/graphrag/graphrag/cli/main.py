@@ -1,4 +1,5 @@
 # Copyright (c) 2024 Microsoft Corporation.
+# Modifications Copyright (c) 2026 Sougato
 # Licensed under the MIT License
 
 """CLI entrypoint."""

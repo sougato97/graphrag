@@ -1,9 +1,14 @@
+<!-- Copyright (c) 2024 Microsoft Corporation. -->
+<!-- Modifications Copyright (c) 2026 Sougato -->
+
 # GraphRAG with ClickHouse and OSS Model Support
 
 👉 [Microsoft Research Blog Post](https://www.microsoft.com/en-us/research/blog/graphrag-unlocking-llm-discovery-on-narrative-private-data/)<br/>
 👉 [Read the docs](https://microsoft.github.io/graphrag)<br/>
 👉 [GraphRAG Arxiv](https://arxiv.org/pdf/2404.16130)<br/>
 👉 [Original GraphRAG Repository](https://github.com/microsoft/graphrag)
+
+Fork maintained by [Sougato](https://sougato97.github.io/), focused on ClickHouse-backed storage and OSS/local model deployments.
 
 <div align="left">
   <a href="https://pypi.org/project/graphrag/">
@@ -23,6 +28,8 @@
 ## Overview
 
 This repository builds on Microsoft's GraphRAG and adapts it for self-hosted and open-source deployments.
+
+This fork includes additional files and modifications maintained by Sougato. These additions are not part of the upstream Microsoft GraphRAG repository.
 
 The main goal of this fork is to make GraphRAG practical for environments where you want:
 
@@ -53,6 +60,33 @@ For model serving, this repo is designed to work well with [ModelServer](https:/
 - it lets you run a self-hosted setup without being locked into a cloud-specific vector or database service
 - it works well for building locally first and scaling the deployment later as usage grows
 - using the same database family for both workflow tables and embeddings keeps the storage story simpler
+
+## Where To Look In The Codebase
+
+If you want to inspect the implementation directly, these are the main entry points:
+
+Storage and ClickHouse:
+- Table provider implementation: [packages/graphrag-storage/graphrag_storage/tables/clickhouse_table_provider.py](./packages/graphrag-storage/graphrag_storage/tables/clickhouse_table_provider.py)
+- Table provider factory wiring: [packages/graphrag-storage/graphrag_storage/tables/table_provider_factory.py](./packages/graphrag-storage/graphrag_storage/tables/table_provider_factory.py)
+- Table provider config model: [packages/graphrag-storage/graphrag_storage/tables/table_provider_config.py](./packages/graphrag-storage/graphrag_storage/tables/table_provider_config.py)
+- Vector store implementation: [packages/graphrag-vectors/graphrag_vectors/clickhouse.py](./packages/graphrag-vectors/graphrag_vectors/clickhouse.py)
+- Vector store factory wiring: [packages/graphrag-vectors/graphrag_vectors/vector_store_factory.py](./packages/graphrag-vectors/graphrag_vectors/vector_store_factory.py)
+- Vector store config model: [packages/graphrag-vectors/graphrag_vectors/vector_store_config.py](./packages/graphrag-vectors/graphrag_vectors/vector_store_config.py)
+
+OSS and Local Model Support:
+- OSS OpenAI-style adapter: [packages/graphrag-llm/graphrag_llm/adapters/oss_openai_adapter.py](./packages/graphrag-llm/graphrag_llm/adapters/oss_openai_adapter.py)
+- Legacy `inhouse` compatibility shim: [packages/graphrag-llm/graphrag_llm/adapters/inhouse_openai_adapter.py](./packages/graphrag-llm/graphrag_llm/adapters/inhouse_openai_adapter.py)
+- LiteLLM completion provider mapping: [packages/graphrag-llm/graphrag_llm/completion/lite_llm_completion.py](./packages/graphrag-llm/graphrag_llm/completion/lite_llm_completion.py)
+- LiteLLM embedding provider mapping: [packages/graphrag-llm/graphrag_llm/embedding/lite_llm_embedding.py](./packages/graphrag-llm/graphrag_llm/embedding/lite_llm_embedding.py)
+
+Initialization and Configuration:
+- CLI init provider selection and compatibility handling: [packages/graphrag/graphrag/cli/initialize.py](./packages/graphrag/graphrag/cli/initialize.py)
+- Generated OSS init templates and ClickHouse defaults: [packages/graphrag/graphrag/config/init_content.py](./packages/graphrag/graphrag/config/init_content.py)
+- Example OSS plus ClickHouse settings: [packages/graphrag-common/example_notebooks/config_files/settings.yaml](./packages/graphrag-common/example_notebooks/config_files/settings.yaml)
+
+Tests:
+- ClickHouse storage tests: [tests/unit/storage/test_clickhouse_table_provider.py](./tests/unit/storage/test_clickhouse_table_provider.py)
+- ClickHouse vector store integration tests: [tests/integration/vector_stores/test_clickhouse.py](./tests/integration/vector_stores/test_clickhouse.py)
 
 ## Supported Deployment Pattern
 

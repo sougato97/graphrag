@@ -1,3 +1,5 @@
+### Copyright (c) 2024 Microsoft Corporation.
+### Modifications Copyright (c) 2026 Sougato
 ### This config file contains required core defaults that must be set, along with a handful of common optional settings.
 ### For a full list of available settings, see https://microsoft.github.io/graphrag/config/yaml/
 
